@@ -11,7 +11,9 @@ import androidx.recyclerview.widget.RecyclerView
 
 class MedallistAdapter(
     private var items: List<ListItem>,
-    private val onItemClick: (Medallist) -> Unit
+    private var favourites: Set<String>,
+    private val onItemClick: (Medallist) -> Unit,
+    private val onFavouriteClick: (Medallist) -> Unit
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     companion object {
@@ -28,6 +30,7 @@ class MedallistAdapter(
         val nameText: TextView = view.findViewById(R.id.tv_name)
         val subtitleText: TextView = view.findViewById(R.id.tv_subtitle)
         val minorText: TextView = view.findViewById(R.id.tv_minor)
+        val bookmarkBtn: ImageView = view.findViewById(R.id.btn_bookmark)
     }
 
     override fun getItemViewType(position: Int): Int = when (items[position]) {
@@ -62,10 +65,10 @@ class MedallistAdapter(
         val medalColorRes: Int
         val bgColorRes: Int
         when {
-            m.gold > 0 -> { medalColorRes = R.color.medal_gold;   bgColorRes = R.color.bg_gold }
+            m.gold > 0   -> { medalColorRes = R.color.medal_gold;   bgColorRes = R.color.bg_gold }
             m.silver > 0 -> { medalColorRes = R.color.medal_silver; bgColorRes = R.color.bg_silver }
             m.bronze > 0 -> { medalColorRes = R.color.medal_bronze; bgColorRes = R.color.bg_bronze }
-            else -> { medalColorRes = R.color.text_minor; bgColorRes = R.color.bg_no_medal }
+            else         -> { medalColorRes = R.color.text_minor;   bgColorRes = R.color.bg_no_medal }
         }
 
         holder.medalIcon.imageTintList = ColorStateList.valueOf(
@@ -74,7 +77,23 @@ class MedallistAdapter(
         holder.itemView.setBackgroundColor(
             ContextCompat.getColor(holder.itemView.context, bgColorRes)
         )
+
+        val isFav = favourites.contains(m.country)
+        holder.bookmarkBtn.imageTintList = ColorStateList.valueOf(
+            ContextCompat.getColor(
+                holder.itemView.context,
+                if (isFav) R.color.colorPrimary else R.color.text_minor
+            )
+        )
+
         holder.itemView.setOnClickListener { onItemClick(m) }
+        holder.bookmarkBtn.setOnClickListener { onFavouriteClick(m) }
+    }
+
+    fun update(newItems: List<ListItem>, newFavourites: Set<String>) {
+        items = newItems
+        favourites = newFavourites
+        notifyDataSetChanged()
     }
 
     fun updateItems(newItems: List<ListItem>) {

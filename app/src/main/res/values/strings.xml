@@ -1,11 +1,17 @@
 <resources>
     <string name="app_name">The Medallists</string>
     <string name="menu_last_viewed">Last Viewed</string>
-    <string name="menu_sort_az">Sort A → Z</string>
-    <string name="menu_sort_za">Sort Z → A</string>
-    <string name="menu_sort_gold">Sort by Most Gold</string>
-    <string name="menu_sort_name">Sort by Name</string>
     <string name="last_viewed_title">Last Viewed Medallist</string>
     <string name="no_data_message">No medallist viewed yet.\nTap an item in the list first.</string>
     <string name="medal_icon_desc">Medal icon</string>
+
+    <string name="menu_sort_az">Sort A → Z</string>
+    <string name="menu_sort_za">Sort Z → A</string>
+    <string name="menu_sort_gold">Sort by Most Gold</string>
+    <string name="menu_sort_gold_active">✓ Most Gold</string>
+    <string name="menu_sort_total">Sort by Most Medals</string>
+    <string name="menu_sort_total_active">✓ Most Medals</string>
+    <string name="menu_sort_name">Sort by Name</string>
+    <string name="menu_favourites">★ Show Favourites Only</string>
+    <string name="menu_favourites_active">★ Favourites Only: ON</string>
 </resources>
