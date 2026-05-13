@@ -6,14 +6,12 @@ plugins {
 
 android {
     namespace = "com.marknguyen.themedallists"
-    compileSdk {
-        version = release(36)
-    }
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "com.marknguyen.themedallists"
-        minSdk = 36
-        targetSdk = 36
+        minSdk = 24
+        targetSdk = 35
         versionCode = 1
         versionName = "1.0"
 
