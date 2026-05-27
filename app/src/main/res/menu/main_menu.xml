@@ -14,8 +14,20 @@
         android:title="@string/menu_sort_total"
         app:showAsAction="never" />
     <item
+        android:id="@+id/menu_sort_efficiency"
+        android:title="@string/menu_sort_efficiency"
+        app:showAsAction="never" />
+    <item
         android:id="@+id/menu_favourites"
         android:title="@string/menu_favourites"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/menu_clear_favourites"
+        android:title="@string/menu_clear_favourites"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/menu_statistics"
+        android:title="@string/menu_statistics"
         app:showAsAction="never" />
     <item
         android:id="@+id/menu_last_viewed"

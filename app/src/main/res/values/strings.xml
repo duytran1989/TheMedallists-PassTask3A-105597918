@@ -14,4 +14,8 @@
     <string name="menu_sort_name">Sort by Name</string>
     <string name="menu_favourites">★ Show Favourites Only</string>
     <string name="menu_favourites_active">★ Favourites Only: ON</string>
+    <string name="menu_clear_favourites">Clear All Favourites</string>
+    <string name="menu_statistics">View Statistics</string>
+    <string name="menu_sort_efficiency">Sort by Efficiency</string>
+    <string name="menu_sort_efficiency_active">✓ Most Efficient</string>
 </resources>
