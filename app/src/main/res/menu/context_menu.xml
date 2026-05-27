@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/context_share"
+        android:title="Share"
+        android:icon="@drawable/ic_share"
+        app:showAsAction="always" />
+    <item
+        android:id="@+id/context_favourite"
+        android:title="Favourite"
+        android:icon="@drawable/ic_bookmark"
+        app:showAsAction="always" />
+    <item
+        android:id="@+id/context_compare"
+        android:title="Compare"
+        android:icon="@drawable/ic_compare"
+        app:showAsAction="always" />
+</menu>
