@@ -21,6 +21,7 @@
     <color name="bg_bronze">#FFF3E0</color>
 
     <color name="bg_no_medal">#FFFFFF</color>
+    <color name="bg_selected">#E8EAF6</color>
 
     <color name="text_primary">#212121</color>
     <color name="text_secondary">#616161</color>

@@ -8,7 +8,10 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.core.content.ContextCompat
+import com.google.android.material.bottomsheet.BottomSheetBehavior
+import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
+import com.google.android.material.progressindicator.LinearProgressIndicator
 
 class MedallistDetailSheet : BottomSheetDialogFragment() {
 
@@ -19,8 +22,9 @@ class MedallistDetailSheet : BottomSheetDialogFragment() {
         private const val ARG_GOLD = "gold"
         private const val ARG_SILVER = "silver"
         private const val ARG_BRONZE = "bronze"
+        private const val ARG_RANK = "rank"
 
-        fun newInstance(m: Medallist): MedallistDetailSheet {
+        fun newInstance(m: Medallist, rank: Int): MedallistDetailSheet {
             val sheet = MedallistDetailSheet()
             sheet.arguments = Bundle().apply {
                 putString(ARG_COUNTRY, m.country)
@@ -29,10 +33,15 @@ class MedallistDetailSheet : BottomSheetDialogFragment() {
                 putInt(ARG_GOLD, m.gold)
                 putInt(ARG_SILVER, m.silver)
                 putInt(ARG_BRONZE, m.bronze)
+                putInt(ARG_RANK, rank)
             }
             return sheet
         }
     }
+
+    private var targetGoldPct = 0
+    private var targetSilverPct = 0
+    private var targetBronzePct = 0
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -50,6 +59,7 @@ class MedallistDetailSheet : BottomSheetDialogFragment() {
         val gold = args.getInt(ARG_GOLD, 0)
         val silver = args.getInt(ARG_SILVER, 0)
         val bronze = args.getInt(ARG_BRONZE, 0)
+        val rank = args.getInt(ARG_RANK, 0)
         val total = gold + silver + bronze
 
         val iconColorRes = when {
@@ -70,22 +80,74 @@ class MedallistDetailSheet : BottomSheetDialogFragment() {
             setTextColor(iconColor)
         }
 
-        view.findViewById<TextView>(R.id.tv_sheet_times).text =
-            "Times Competed: $times"
+        view.findViewById<TextView>(R.id.tv_sheet_rank).apply {
+            if (rank > 0) {
+                text = "Ranked #$rank globally by total medals"
+                visibility = View.VISIBLE
+            } else {
+                visibility = View.GONE
+            }
+        }
+
+        view.findViewById<TextView>(R.id.tv_sheet_times).text = "Times Competed: $times"
+
+        val efficiency = if (times > 0) total.toFloat() / times else 0f
+        view.findViewById<TextView>(R.id.tv_sheet_efficiency).text =
+            "Medals per appearance: ${"%.1f".format(efficiency)}"
+
+        targetGoldPct = if (total > 0) gold * 100 / total else 0
+        targetSilverPct = if (total > 0) silver * 100 / total else 0
+        targetBronzePct = if (total > 0) 100 - targetGoldPct - targetSilverPct else 0
 
         view.findViewById<TextView>(R.id.tv_sheet_gold).apply {
             text = "Gold:   $gold"
             setTextColor(ContextCompat.getColor(requireContext(), R.color.medal_gold))
         }
+        view.findViewById<LinearProgressIndicator>(R.id.pb_gold).setProgressCompat(0, false)
+        view.findViewById<TextView>(R.id.tv_sheet_gold_pct).text = "$targetGoldPct%"
+
         view.findViewById<TextView>(R.id.tv_sheet_silver).apply {
             text = "Silver:  $silver"
             setTextColor(ContextCompat.getColor(requireContext(), R.color.medal_silver))
         }
+        view.findViewById<LinearProgressIndicator>(R.id.pb_silver).setProgressCompat(0, false)
+        view.findViewById<TextView>(R.id.tv_sheet_silver_pct).text = "$targetSilverPct%"
+
         view.findViewById<TextView>(R.id.tv_sheet_bronze).apply {
             text = "Bronze: $bronze"
             setTextColor(ContextCompat.getColor(requireContext(), R.color.medal_bronze))
         }
-        view.findViewById<TextView>(R.id.tv_sheet_total).text =
-            "Total Medals: $total"
+        view.findViewById<LinearProgressIndicator>(R.id.pb_bronze).setProgressCompat(0, false)
+        view.findViewById<TextView>(R.id.tv_sheet_bronze_pct).text = "$targetBronzePct%"
+
+        view.findViewById<TextView>(R.id.tv_sheet_total).text = "Total Medals: $total"
+    }
+
+    override fun onStart() {
+        super.onStart()
+        val bsDialog = dialog as? BottomSheetDialog ?: return
+        val behavior = bsDialog.behavior
+        if (behavior.state == BottomSheetBehavior.STATE_EXPANDED ||
+            behavior.state == BottomSheetBehavior.STATE_COLLAPSED) {
+            view?.post { if (isAdded) animateProgressBars() }
+        } else {
+            behavior.addBottomSheetCallback(object : BottomSheetBehavior.BottomSheetCallback() {
+                override fun onStateChanged(bottomSheet: View, newState: Int) {
+                    if (newState == BottomSheetBehavior.STATE_EXPANDED ||
+                        newState == BottomSheetBehavior.STATE_COLLAPSED) {
+                        animateProgressBars()
+                        behavior.removeBottomSheetCallback(this)
+                    }
+                }
+                override fun onSlide(bottomSheet: View, slideOffset: Float) {}
+            })
+        }
+    }
+
+    private fun animateProgressBars() {
+        val v = view ?: return
+        v.findViewById<LinearProgressIndicator>(R.id.pb_gold).setProgressCompat(targetGoldPct, true)
+        v.findViewById<LinearProgressIndicator>(R.id.pb_silver).setProgressCompat(targetSilverPct, true)
+        v.findViewById<LinearProgressIndicator>(R.id.pb_bronze).setProgressCompat(targetBronzePct, true)
     }
 }

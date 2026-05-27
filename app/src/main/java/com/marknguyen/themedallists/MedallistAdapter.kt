@@ -13,8 +13,11 @@ class MedallistAdapter(
     private var items: List<ListItem>,
     private var favourites: Set<String>,
     private val onItemClick: (Medallist) -> Unit,
+    private val onItemLongClick: (Medallist) -> Unit,
     private val onFavouriteClick: (Medallist) -> Unit
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+
+    private var selectedCountry: String? = null
 
     companion object {
         private const val VIEW_TYPE_HEADER = 0
@@ -58,6 +61,8 @@ class MedallistAdapter(
     }
 
     private fun bindItem(holder: ItemViewHolder, m: Medallist) {
+        val ctx = holder.itemView.context
+
         holder.nameText.text = m.country
         holder.subtitleText.text = "${m.iocCode} • ${m.timesCompeted} appearances"
         holder.minorText.text = "Gold: ${m.gold}  •  Silver: ${m.silver}  •  Bronze: ${m.bronze}"
@@ -72,22 +77,35 @@ class MedallistAdapter(
         }
 
         holder.medalIcon.imageTintList = ColorStateList.valueOf(
-            ContextCompat.getColor(holder.itemView.context, medalColorRes)
+            ContextCompat.getColor(ctx, medalColorRes)
         )
+
+        val isSelected = m.country == selectedCountry
         holder.itemView.setBackgroundColor(
-            ContextCompat.getColor(holder.itemView.context, bgColorRes)
+            ContextCompat.getColor(ctx, if (isSelected) R.color.bg_selected else bgColorRes)
         )
 
         val isFav = favourites.contains(m.country)
         holder.bookmarkBtn.imageTintList = ColorStateList.valueOf(
-            ContextCompat.getColor(
-                holder.itemView.context,
-                if (isFav) R.color.colorPrimary else R.color.text_minor
-            )
+            ContextCompat.getColor(ctx, if (isFav) R.color.colorPrimary else R.color.text_minor)
         )
 
         holder.itemView.setOnClickListener { onItemClick(m) }
+        holder.itemView.setOnLongClickListener { onItemLongClick(m); true }
         holder.bookmarkBtn.setOnClickListener { onFavouriteClick(m) }
+    }
+
+    fun setSelected(country: String?) {
+        val old = selectedCountry
+        selectedCountry = country
+        if (old != null) {
+            val idx = items.indexOfFirst { it is ListItem.Item && it.medallist.country == old }
+            if (idx >= 0) notifyItemChanged(idx)
+        }
+        if (country != null) {
+            val idx = items.indexOfFirst { it is ListItem.Item && it.medallist.country == country }
+            if (idx >= 0) notifyItemChanged(idx)
+        }
     }
 
     fun update(newItems: List<ListItem>, newFavourites: Set<String>) {
